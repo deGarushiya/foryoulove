@@ -248,14 +248,15 @@ function playVideo(videoName) {
     videoModal.classList.remove('hidden');
     setTimeout(() => {
         videoModal.classList.add('active');
-        // Only autoplay for local files
-        if (videoPlayer && videoConfig.useLocalFile && !videoConfig.useDirectUrl && videoPlayer.readyState >= 2) {
-            videoPlayer.play().catch(err => {
+        // Try to autoplay for local files (may be blocked by browser policy)
+        const finalVideoPlayer = document.getElementById('video-player');
+        if (finalVideoPlayer && videoConfig.useLocalFile && !videoConfig.useDirectUrl) {
+            finalVideoPlayer.play().catch(err => {
                 console.log('Video autoplay prevented (user interaction required):', err);
                 // User will need to click play button - this is normal browser behavior
             });
         }
-    }, 100); // Slightly longer delay to ensure video element is ready
+    }, 200); // Longer delay to ensure video element is ready
 }
 
 function closeVideoModal() {
