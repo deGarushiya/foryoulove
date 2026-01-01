@@ -1,0 +1,39 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Ignore image and video files (but keep folder structure)
+assets/images/**/*.jpg
+assets/images/**/*.jpeg
+assets/images/**/*.png
+assets/images/**/*.gif
+assets/images/**/*.JPG
+assets/images/**/*.JPEG
+assets/images/**/*.PNG
+assets/images/**/*.GIF
+assets/video/*.mp4
+assets/video/*.MP4
+assets/videos/*.mp4
+assets/videos/*.MP4
+
+# Keep .gitkeep files to preserve folder structure
+!assets/images/**/.gitkeep
+!assets/videos/.gitkeep
+
+# Temporary development files
+*.txt
+additional-long-g.html
+insert-flowers.js
+generate-image-list.js
