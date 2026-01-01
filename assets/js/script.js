@@ -221,8 +221,26 @@ function playVideo(videoName) {
     } else {
         // Local file (default)
         if (videoPlayer) {
+            // Set video source and reload
             videoPlayer.src = videoConfig.localPath;
+            videoPlayer.load(); // Important: reload the video element with new source
             videoPlayer.style.display = 'block';
+            
+            // Add error handling
+            videoPlayer.addEventListener('error', function(e) {
+                console.error('Video loading error:', e);
+                console.error('Video path:', videoConfig.localPath);
+                console.error('Video element:', videoPlayer);
+                // Show user-friendly error message
+                if (videoContainer) {
+                    videoContainer.innerHTML = '<p style="color: #ff6b6b; padding: 2rem; text-align: center;">Sorry, the video could not be loaded. Please check the file path.</p>';
+                }
+            });
+            
+            // Log when video loads successfully
+            videoPlayer.addEventListener('loadeddata', function() {
+                console.log('Video loaded successfully:', videoConfig.localPath);
+            });
         }
     }
     
@@ -231,12 +249,13 @@ function playVideo(videoName) {
     setTimeout(() => {
         videoModal.classList.add('active');
         // Only autoplay for local files
-        if (videoPlayer && videoConfig.useLocalFile && !videoConfig.useDirectUrl) {
+        if (videoPlayer && videoConfig.useLocalFile && !videoConfig.useDirectUrl && videoPlayer.readyState >= 2) {
             videoPlayer.play().catch(err => {
-                console.log('Video autoplay prevented:', err);
+                console.log('Video autoplay prevented (user interaction required):', err);
+                // User will need to click play button - this is normal browser behavior
             });
         }
-    }, 50);
+    }, 100); // Slightly longer delay to ensure video element is ready
 }
 
 function closeVideoModal() {
