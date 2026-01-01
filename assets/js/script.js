@@ -220,27 +220,40 @@ function playVideo(videoName) {
         }
     } else {
         // Local file (default)
-        if (videoPlayer) {
-            // Set video source and reload
-            videoPlayer.src = videoConfig.localPath;
-            videoPlayer.load(); // Important: reload the video element with new source
-            videoPlayer.style.display = 'block';
+        if (videoContainer) {
+            // Clear container and create fresh video element
+            videoContainer.innerHTML = '';
             
-            // Add error handling
-            videoPlayer.addEventListener('error', function(e) {
-                console.error('Video loading error:', e);
+            const newVideo = document.createElement('video');
+            newVideo.id = 'video-player';
+            newVideo.controls = true;
+            newVideo.preload = 'metadata';
+            newVideo.style.width = '100%';
+            newVideo.style.height = 'auto';
+            newVideo.style.display = 'block';
+            
+            const source = document.createElement('source');
+            source.src = videoConfig.localPath;
+            source.type = 'video/mp4';
+            newVideo.appendChild(source);
+            
+            newVideo.appendChild(document.createTextNode('Your browser does not support the video tag.'));
+            
+            // Error handling
+            newVideo.addEventListener('error', function(e) {
+                console.error('Video error:', newVideo.error);
                 console.error('Video path:', videoConfig.localPath);
-                console.error('Video element:', videoPlayer);
-                // Show user-friendly error message
-                if (videoContainer) {
-                    videoContainer.innerHTML = '<p style="color: #ff6b6b; padding: 2rem; text-align: center;">Sorry, the video could not be loaded. Please check the file path.</p>';
-                }
+                const errorMsg = document.createElement('p');
+                errorMsg.style.cssText = 'color: #ff6b6b; padding: 2rem; text-align: center;';
+                errorMsg.textContent = 'Video could not load. Please check the file or try refreshing the page.';
+                videoContainer.appendChild(errorMsg);
             });
             
-            // Log when video loads successfully
-            videoPlayer.addEventListener('loadeddata', function() {
-                console.log('Video loaded successfully:', videoConfig.localPath);
+            newVideo.addEventListener('loadedmetadata', function() {
+                console.log('Video loaded:', videoConfig.localPath);
             });
+            
+            videoContainer.appendChild(newVideo);
         }
     }
     
