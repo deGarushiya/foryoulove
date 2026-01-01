@@ -521,8 +521,16 @@ function createConfetti(element) {
 // Albums Loading
 // ============================================
 function loadAlbums() {
+    console.log('[DEBUG] loadAlbums called, albumsData:', Object.keys(albumsData).length, 'albums');
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:523',message:'loadAlbums called',data:{albumCount:Object.keys(albumsData).length},timestamp:Date.now(),sessionId:'debug-session',runId:'album-images-issue',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+    
     const albumsContainer = document.getElementById('albums-container');
-    if (!albumsContainer) return;
+    if (!albumsContainer) {
+        console.error('[DEBUG] albums-container not found!');
+        return;
+    }
     
     const albumNames = Object.keys(albumsData);
     if (albumNames.length === 0) {
@@ -533,9 +541,16 @@ function loadAlbums() {
     albumsContainer.innerHTML = '';
     
     albumNames.forEach((albumName, index) => {
-        const albumCard = createAlbumCard(albumName, albumsData[albumName], index);
+        const imageCount = albumsData[albumName] ? albumsData[albumName].length : 0;
+        console.log('[DEBUG] Creating album card:', albumName, 'with', imageCount, 'images');
+        const albumCard = createAlbumCard(albumName, albumsData[albumName] || [], index);
         albumsContainer.appendChild(albumCard);
     });
+    
+    console.log('[DEBUG] All album cards created');
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:540',message:'All album cards created',data:{albumCount:albumNames.length},timestamp:Date.now(),sessionId:'debug-session',runId:'album-images-issue',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
 }
 
 function createAlbumCard(albumName, images, index) {
@@ -579,30 +594,64 @@ function createAlbumCard(albumName, images, index) {
 }
 
 function showAlbumPhotos(albumName) {
+    console.log('[DEBUG] showAlbumPhotos called with albumName:', albumName);
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:581',message:'showAlbumPhotos called',data:{albumName:albumName},timestamp:Date.now(),sessionId:'debug-session',runId:'album-images-issue',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+    
     closeModal('us-modal');
     
     const images = albumsData[albumName] || [];
+    console.log('[DEBUG] Images for album:', albumName, 'Count:', images.length, 'Images:', images.slice(0, 3));
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:587',message:'Images retrieved from albumsData',data:{albumName:albumName,imageCount:images.length,firstFew:images.slice(0,3)},timestamp:Date.now(),sessionId:'debug-session',runId:'album-images-issue',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+    
     currentAlbum = albumName;
     currentImages = images.map(img => `${albumName}/${img}`);
     
     const galleryGrid = document.getElementById('album-gallery-grid');
     const albumTitle = document.getElementById('album-modal-title');
     
+    console.log('[DEBUG] Gallery elements found:', {galleryGrid: !!galleryGrid, albumTitle: !!albumTitle});
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:595',message:'Gallery elements check',data:{galleryGridFound:!!galleryGrid,albumTitleFound:!!albumTitle},timestamp:Date.now(),sessionId:'debug-session',runId:'album-images-issue',hypothesisId:'B'})}).catch(()=>{});
+    // #endregion
+    
     if (galleryGrid && albumTitle) {
         albumTitle.textContent = albumName;
         galleryGrid.innerHTML = '';
         
+        console.log('[DEBUG] Starting to create gallery items, image count:', images.length);
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:603',message:'Creating gallery items',data:{imageCount:images.length},timestamp:Date.now(),sessionId:'debug-session',runId:'album-images-issue',hypothesisId:'C'})}).catch(()=>{});
+        // #endregion
+        
         images.forEach((filename, index) => {
+            const imagePath = `assets/images/${albumName}/${filename}`;
+            console.log('[DEBUG] Creating image element:', imagePath);
+            
             const galleryItem = document.createElement('div');
             galleryItem.className = 'gallery-item';
             galleryItem.onclick = () => openLightbox(index);
             
             const img = document.createElement('img');
-            img.src = `assets/images/${albumName}/${filename}`;
+            img.src = imagePath;
             img.alt = `${albumName} - ${index + 1}`;
             img.loading = 'lazy';
             
+            img.onload = function() {
+                console.log('[DEBUG] Image loaded successfully:', imagePath);
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:618',message:'Image loaded successfully',data:{imagePath:imagePath,index:index},timestamp:Date.now(),sessionId:'debug-session',runId:'album-images-issue',hypothesisId:'D'})}).catch(()=>{});
+                // #endregion
+            };
+            
             img.onerror = function() {
+                console.error('[DEBUG] Image failed to load:', imagePath);
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:625',message:'Image failed to load',data:{imagePath:imagePath,index:index},timestamp:Date.now(),sessionId:'debug-session',runId:'album-images-issue',hypothesisId:'E'})}).catch(()=>{});
+                // #endregion
                 galleryItem.style.display = 'none';
             };
             
@@ -610,7 +659,17 @@ function showAlbumPhotos(albumName) {
             galleryGrid.appendChild(galleryItem);
         });
         
+        console.log('[DEBUG] All gallery items created, showing modal');
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:635',message:'Showing album photos modal',data:{albumName:albumName,itemCount:galleryGrid.children.length},timestamp:Date.now(),sessionId:'debug-session',runId:'album-images-issue',hypothesisId:'C'})}).catch(()=>{});
+        // #endregion
+        
         showModal('album-photos-modal');
+    } else {
+        console.error('[DEBUG] Gallery grid or album title element not found!');
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:640',message:'Gallery elements missing',data:{galleryGrid:!!galleryGrid,albumTitle:!!albumTitle},timestamp:Date.now(),sessionId:'debug-session',runId:'album-images-issue',hypothesisId:'B'})}).catch(()=>{});
+        // #endregion
     }
 }
 
