@@ -24,16 +24,34 @@ const surpriseMessages = [
 // Initialize
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:25',message:'DOMContentLoaded fired',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+    
     createFloatingHearts();
     loadAlbums();
     setupLightbox();
     
     // Ensure Enter button works with fallback listener
     const enterBtn = document.querySelector('.enter-btn');
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:33',message:'Enter button check',data:{found:!!enterBtn,hasOnclick:!!(enterBtn&&enterBtn.onclick),goToHomeDefined:typeof goToHome==='function',windowGoToHomeDefined:typeof window.goToHome==='function'},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+    
     if (enterBtn) {
         enterBtn.addEventListener('click', function(e) {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:38',message:'Enter button clicked (addEventListener)',data:{eventType:e.type,defaultPrevented:e.defaultPrevented},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
             if (typeof goToHome === 'function') {
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:41',message:'Calling goToHome from addEventListener',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'B'})}).catch(()=>{});
+                // #endregion
                 goToHome();
+            } else {
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:45',message:'goToHome function not found',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'C'})}).catch(()=>{});
+                // #endregion
             }
         });
     }
@@ -63,6 +81,10 @@ function createFloatingHearts() {
 // Page Navigation
 // ============================================
 function showPage(pageId) {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:64',message:'showPage called',data:{pageId:pageId},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
+    
     // Hide all pages
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
@@ -71,21 +93,34 @@ function showPage(pageId) {
     
     // Show target page
     const targetPage = document.getElementById(pageId);
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:75',message:'targetPage check',data:{pageId:pageId,found:!!targetPage},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
+    
     if (targetPage) {
         targetPage.classList.remove('hidden');
         setTimeout(() => {
             targetPage.classList.add('active');
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:81',message:'page activated',data:{pageId:pageId},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'D'})}).catch(()=>{});
+            // #endregion
         }, 50);
         currentPage = pageId;
     }
 }
 
 function goToHome() {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:83',message:'goToHome called',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
     showPage('home-page');
 }
 
 // Ensure goToHome is in global scope for onclick handlers
 window.goToHome = goToHome;
+// #region agent log
+fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:88',message:'goToHome assigned to window',data:{windowGoToHomeDefined:typeof window.goToHome==='function'},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'A'})}).catch(()=>{});
+// #endregion
 
 function goToMessages() {
     showPage('messages-page');
