@@ -1,5 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
-# Git LFS for large video files
-*.mp4 filter=lfs diff=lfs merge=lfs -text
+# Note: Video files are uploaded directly (no Git LFS needed for files under 100MB)
+# If you need LFS in the future for larger files, uncomment the line below:
+# *.mp4 filter=lfs diff=lfs merge=lfs -text
