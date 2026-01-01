@@ -157,7 +157,7 @@ function goToFinal() {
 const videoConfig = {
     // Option 1: Local file (default)
     useLocalFile: true,
-    localPath: 'assets/video/2025 with you.mp4',
+    localPath: 'assets/videos/2025 with you.mp4',  // Note: using 'videos' (plural) folder
     
     // Option 2: YouTube embed (uncomment and add video ID)
     // useYouTube: true,
