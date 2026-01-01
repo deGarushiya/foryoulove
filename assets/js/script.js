@@ -34,26 +34,71 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Ensure Enter button works with fallback listener
     const enterBtn = document.querySelector('.enter-btn');
+    console.log('[DEBUG] Enter button check:', {
+        found: !!enterBtn,
+        hasOnclick: !!(enterBtn && enterBtn.onclick),
+        goToHomeDefined: typeof goToHome === 'function',
+        windowGoToHomeDefined: typeof window.goToHome === 'function'
+    });
     // #region agent log
     fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:33',message:'Enter button check',data:{found:!!enterBtn,hasOnclick:!!(enterBtn&&enterBtn.onclick),goToHomeDefined:typeof goToHome==='function',windowGoToHomeDefined:typeof window.goToHome==='function'},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'A'})}).catch(()=>{});
     // #endregion
     
     if (enterBtn) {
+        // Remove any existing onclick to avoid conflicts
+        enterBtn.onclick = null;
+        
+        // Add click listener that will definitely work
         enterBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('[DEBUG] Enter button clicked!');
             // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:38',message:'Enter button clicked (addEventListener)',data:{eventType:e.type,defaultPrevented:e.defaultPrevented},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'B'})}).catch(()=>{});
+            fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:42',message:'Enter button clicked (addEventListener)',data:{eventType:e.type,defaultPrevented:e.defaultPrevented},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'B'})}).catch(()=>{});
             // #endregion
-            if (typeof goToHome === 'function') {
+            
+            // Try multiple ways to call goToHome
+            if (typeof window.goToHome === 'function') {
+                console.log('[DEBUG] Calling window.goToHome()');
                 // #region agent log
-                fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:41',message:'Calling goToHome from addEventListener',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'B'})}).catch(()=>{});
+                fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:48',message:'Calling window.goToHome',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'B'})}).catch(()=>{});
+                // #endregion
+                window.goToHome();
+            } else if (typeof goToHome === 'function') {
+                console.log('[DEBUG] Calling goToHome()');
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:52',message:'Calling goToHome',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'B'})}).catch(()=>{});
                 // #endregion
                 goToHome();
             } else {
+                console.error('[DEBUG] goToHome function not found!');
                 // #region agent log
-                fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:45',message:'goToHome function not found',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'C'})}).catch(()=>{});
+                fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:57',message:'goToHome function not found',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'C'})}).catch(()=>{});
                 // #endregion
+                // Fallback: directly show the home page
+                const homePage = document.getElementById('home-page');
+                if (homePage) {
+                    document.querySelectorAll('.page').forEach(p => {
+                        p.classList.remove('active');
+                        p.classList.add('hidden');
+                    });
+                    homePage.classList.remove('hidden');
+                    setTimeout(() => homePage.classList.add('active'), 50);
+                }
             }
-        });
+        }, true); // Use capture phase to ensure it fires
+        
+        // Also set onclick as backup
+        enterBtn.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('[DEBUG] Enter button onclick fired');
+            if (typeof window.goToHome === 'function') {
+                window.goToHome();
+            }
+        };
+    } else {
+        console.error('[DEBUG] Enter button not found in DOM!');
     }
 });
 
@@ -81,6 +126,7 @@ function createFloatingHearts() {
 // Page Navigation
 // ============================================
 function showPage(pageId) {
+    console.log('[DEBUG] showPage() called with pageId:', pageId);
     // #region agent log
     fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:64',message:'showPage called',data:{pageId:pageId},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'D'})}).catch(()=>{});
     // #endregion
@@ -93,6 +139,7 @@ function showPage(pageId) {
     
     // Show target page
     const targetPage = document.getElementById(pageId);
+    console.log('[DEBUG] Target page found:', !!targetPage, 'for pageId:', pageId);
     // #region agent log
     fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:75',message:'targetPage check',data:{pageId:pageId,found:!!targetPage},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'D'})}).catch(()=>{});
     // #endregion
@@ -101,15 +148,19 @@ function showPage(pageId) {
         targetPage.classList.remove('hidden');
         setTimeout(() => {
             targetPage.classList.add('active');
+            console.log('[DEBUG] Page activated:', pageId);
             // #region agent log
             fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:81',message:'page activated',data:{pageId:pageId},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'D'})}).catch(()=>{});
             // #endregion
         }, 50);
         currentPage = pageId;
+    } else {
+        console.error('[DEBUG] Target page not found:', pageId);
     }
 }
 
 function goToHome() {
+    console.log('[DEBUG] goToHome() function called');
     // #region agent log
     fetch('http://127.0.0.1:7242/ingest/24446d4c-7fb2-495e-9f95-0f7742d3fd9a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'script.js:83',message:'goToHome called',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'enter-button-issue',hypothesisId:'D'})}).catch(()=>{});
     // #endregion
