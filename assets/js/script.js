@@ -186,7 +186,6 @@ let albumsData = {
         "IMG_20251215_192848_378.jpg"
     ]
 };
-});
 
 // ============================================
 // Floating Hearts Background
