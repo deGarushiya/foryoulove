@@ -153,44 +153,114 @@ function goToFinal() {
 // ============================================
 // Video Player
 // ============================================
+// Video configuration - Update this based on your chosen solution
+const videoConfig = {
+    // Option 1: Local file (default)
+    useLocalFile: true,
+    localPath: 'assets/video/2025 with you.mp4',
+    
+    // Option 2: YouTube embed (uncomment and add video ID)
+    // useYouTube: true,
+    // youtubeId: 'YOUR_YOUTUBE_VIDEO_ID',
+    
+    // Option 3: Vimeo embed (uncomment and add video ID)
+    // useVimeo: true,
+    // vimeoId: 'YOUR_VIMEO_VIDEO_ID',
+    
+    // Option 4: Direct URL (for Google Drive, Dropbox, etc.)
+    // useDirectUrl: true,
+    // directUrl: 'https://your-direct-video-link.com/video.mp4'
+};
+
 function playVideo(videoName) {
     const videoModal = document.getElementById('video-modal');
     const videoPlayer = document.getElementById('video-player');
+    const videoContainer = document.querySelector('.video-container');
     const videoTitle = document.getElementById('video-title');
     
-    if (!videoModal || !videoPlayer) return;
+    if (!videoModal) return;
     
-    // Try common video extensions (mp4 is most common, so try it first)
-    const extensions = ['mp4', 'mov', 'webm', 'mkv', 'avi'];
-    const videoPath = `assets/video/${videoName}`;
-    
-    // Default to mp4 (most common format)
-    const videoSrc = `${videoPath}.mp4`;
-    
-    videoPlayer.src = videoSrc;
+    // Update title
     if (videoTitle) {
         videoTitle.textContent = videoName;
+    }
+    
+    // Check video source type
+    if (videoConfig.useYouTube && videoConfig.youtubeId) {
+        // YouTube embed
+        videoContainer.innerHTML = `
+            <iframe 
+                width="100%" 
+                height="100%" 
+                src="https://www.youtube.com/embed/${videoConfig.youtubeId}?autoplay=1" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+            </iframe>
+        `;
+    } else if (videoConfig.useVimeo && videoConfig.vimeoId) {
+        // Vimeo embed
+        videoContainer.innerHTML = `
+            <iframe 
+                src="https://player.vimeo.com/video/${videoConfig.vimeoId}?autoplay=1" 
+                width="100%" 
+                height="100%" 
+                frameborder="0" 
+                allow="autoplay; fullscreen; picture-in-picture" 
+                allowfullscreen
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+            </iframe>
+        `;
+    } else if (videoConfig.useDirectUrl && videoConfig.directUrl) {
+        // Direct URL (Google Drive, Dropbox, etc.)
+        if (videoPlayer) {
+            videoPlayer.src = videoConfig.directUrl;
+            videoPlayer.style.display = 'block';
+        }
+    } else {
+        // Local file (default)
+        if (videoPlayer) {
+            videoPlayer.src = videoConfig.localPath;
+            videoPlayer.style.display = 'block';
+        }
     }
     
     // Show modal
     videoModal.classList.remove('hidden');
     setTimeout(() => {
         videoModal.classList.add('active');
-        videoPlayer.play().catch(err => {
-            console.log('Video autoplay prevented:', err);
-            // If autoplay fails, user can click play manually
-        });
+        // Only autoplay for local files
+        if (videoPlayer && videoConfig.useLocalFile && !videoConfig.useDirectUrl) {
+            videoPlayer.play().catch(err => {
+                console.log('Video autoplay prevented:', err);
+            });
+        }
     }, 50);
 }
 
 function closeVideoModal() {
     const videoModal = document.getElementById('video-modal');
     const videoPlayer = document.getElementById('video-player');
+    const videoContainer = document.querySelector('.video-container');
     
-    if (videoModal && videoPlayer) {
+    if (videoModal) {
         videoModal.classList.remove('active');
-        videoPlayer.pause();
-        videoPlayer.currentTime = 0;
+        
+        // Stop video if using local file
+        if (videoPlayer && videoPlayer.tagName === 'VIDEO') {
+            videoPlayer.pause();
+            videoPlayer.currentTime = 0;
+        }
+        
+        // Reset iframe content if using YouTube/Vimeo
+        if (videoContainer && videoContainer.querySelector('iframe')) {
+            const iframe = videoContainer.querySelector('iframe');
+            const src = iframe.src;
+            iframe.src = ''; // Stop playback
+            iframe.src = src; // Restore for next time
+        }
+        
         setTimeout(() => {
             videoModal.classList.add('hidden');
         }, 300);
