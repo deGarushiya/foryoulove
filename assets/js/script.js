@@ -5,7 +5,8 @@ let currentPage = 'welcome-page';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentAlbum = null;
-let albumsData = {}; // Will be populated from generate-image-list.js
+// Albums data - permanently hardcoded (no need to run generate-image-list.js)
+let albumsData = {
 
 // Surprise messages for clickable hearts/stars
 const surpriseMessages = [
